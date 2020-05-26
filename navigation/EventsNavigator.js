@@ -26,7 +26,9 @@ import MapScreen from '../screens/MapScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import Colors from '../constants/Colors';
 import NewsDetailScreen from '../screens/NewsDetailScreen';
-//import LoginScreen from '../screens/LoginScreen';
+import LoginScreen from '../screens/LoginScreen';
+import LogoutScreen from '../screens/LogoutScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 
 const defaultStackNavOptions = {
   headerStyle: {
@@ -41,6 +43,16 @@ const defaultStackNavOptions = {
   headerTintColor: Colors.primaryColor,
   headerTitle: 'Screen',
 };
+
+const AuthNavigator = createStackNavigator(
+  {
+    Login: LoginScreen,
+    Register: RegisterScreen,
+  },
+  {
+    defaultNavigationOptions: {headerShown: false},
+  },
+);
 
 const EventNavigator = createStackNavigator(
   {
@@ -196,16 +208,22 @@ const InfoFavTabNavigator =
         },
       });
 
-const MainNavigator = createDrawerNavigator(
+const SettingsNavigator = createDrawerNavigator({
+  Home: InfoFavTabNavigator,
+  Logout: LogoutScreen,
+});
+
+const MainNavigator = createSwitchNavigator(
   {
+    Authenticate: {
+      screen: AuthNavigator,
+    },
     Home: {
-      screen: InfoFavTabNavigator,
-      navigationOptions: {
-        drawerLabel: 'Home',
-      },
+      screen: SettingsNavigator,
     },
   },
   {
+    initialRouteName: 'Authenticate',
     contentOptions: {
       activeTintColor: Colors.accentColor,
       labelStyle: {

@@ -10,6 +10,8 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
+import {HeaderButtons, Item} from 'react-navigation-header-buttons';
+import HeaderButton from '../components/HeaderButton';
 import DefaultText from '../components/DefaultText';
 import {firebase} from '@react-native-firebase/app';
 import {firestore} from '../config/FirebaseConfig';
@@ -21,7 +23,7 @@ import Colors from '../constants/Colors';
 
 const {width, height} = Dimensions.get('screen');
 
-class LoginScreen extends React.Component {
+class LogoutScreen extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -32,45 +34,15 @@ class LoginScreen extends React.Component {
     };
   }
 
-  updateInput(name, value) {
-    this.setState(() => ({[name]: value}));
-  }
-
-  Login = () => {
-    const {email, password} = this.state;
-    if (this.state.email === '' || this.state.password === '') {
-      alert('Email / Password fields are empty');
-    } else {
-      this.setState({error: '', loading: true});
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(this.LoginSucceed.bind(this))
-        .catch((error) => {
-          let errorCode = error.code;
-          let errorMessage = error.message;
-          if (errorCode === 'auth/weak-password') {
-            this.LoginFail.bind(this)('Weak password!');
-          } else {
-            this.LoginFail.bind(this)(errorMessage);
-          }
-        });
-    }
+  Logout = () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        this.props.navigation.navigate('Login');
+      })
+      .catch((error) => this.setState({errorMessage: error.message}));
   };
-
-  LoginSucceed() {
-    this.setState({
-      email: '',
-      password: '',
-      error: '',
-      loading: false,
-    });
-    this.props.navigation.navigate('Home');
-  }
-
-  LoginFail(errorMessage) {
-    this.setState({error: errorMessage, loading: false});
-  }
 
   Button() {
     if (this.state.loading) {
@@ -86,8 +58,8 @@ class LoginScreen extends React.Component {
         style={styles.button}
         color={Colors.highlightColor}
         labelStyle={styles.buttonContent}
-        onPress={this.Login.bind(this)}>
-        Login
+        onPress={this.Logout.bind(this)}>
+        Logout
       </Button>
     );
   }
@@ -96,44 +68,10 @@ class LoginScreen extends React.Component {
     return (
       <View style={styles.screen}>
         <View style={styles.headerSection}>
-          <Text style={styles.title}>Welcome to UniLife!</Text>
-          <Text style={styles.headerText}>
-            Login to embark on your HKUST journey!
-          </Text>
+          <Text style={styles.title}>Want to leave the application?</Text>
+          <Text style={styles.headerText}>Click the logout button below.</Text>
         </View>
         <View style={styles.formSection}>
-          <TextInput
-            label="Email"
-            returnKeyType="next"
-            value={this.state.email}
-            onChangeText={(text) => this.updateInput('email', text)}
-            autoCapitalize="none"
-            autoCompleteType="email"
-            textContentType="emailAddress"
-            keyboardType="email-address"
-            style={styles.formInput}
-            underlineColor={Colors.secondaryColor}
-            theme={{colors: {primary: Colors.highlightColor}}}
-          />
-          <TextInput
-            label="Password"
-            returnKeyType="next"
-            value={this.state.password}
-            onChangeText={(text) => this.updateInput('password', text)}
-            autoCapitalize="none"
-            autoCompleteType="off"
-            textContentType="none"
-            keyboardType="default"
-            style={styles.formInput}
-            underlineColor={Colors.secondaryColor}
-            theme={{colors: {primary: Colors.highlightColor}}}
-            secureTextEntry
-          />
-          <Text
-            style={styles.changeScreen}
-            onPress={() => this.props.navigation.navigate('Register')}>
-            New to UniLife? Click here to Register.
-          </Text>
           <Text style={styles.errorMessage}>{this.state.error}</Text>
           {this.Button()}
         </View>
@@ -142,9 +80,21 @@ class LoginScreen extends React.Component {
   }
 }
 
-LoginScreen.navigationOptions = (navData) => {
+LogoutScreen.navigationOptions = (navData) => {
   return {
-    headerTitle: 'Login',
+    headerTitle: 'Logout',
+    headerLeft: () => (
+      <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <Item
+          title="Menu"
+          iconName="menu"
+          style={styles.menu}
+          onPress={() => {
+            navData.navigation.toggleDrawer();
+          }}
+        />
+      </HeaderButtons>
+    ),
   };
 };
 
@@ -224,4 +174,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default LogoutScreen;
