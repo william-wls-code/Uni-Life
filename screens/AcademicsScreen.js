@@ -2,7 +2,6 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import PickerGrades from '../components/PickerGrade';
 
-
 const AcademicsScreen = (props) => {
   return (
     <View>
@@ -26,6 +25,6 @@ const styles = StyleSheet.create({
 });
 
 export default AcademicsScreen;
-/*const [TotalCredit, setTotalCredit] = useState(0); 
-      const [TotalGrade, setTotalGrade] = useState(0); 
+/*const [TotalCredit, setTotalCredit] = useState(0);
+      const [TotalGrade, setTotalGrade] = useState(0);
       const [GPA, setGPA] = useState(0); */

@@ -14,7 +14,7 @@ const NewsItem = (props) => {
             <Text style={styles.category} numberOfLines={1}>
               {props.category}
             </Text>
-            <Text style={styles.title} numberOfLines={3}>
+            <Text style={styles.title} numberOfLines={5}>
               {props.headline}
             </Text>
           </View>

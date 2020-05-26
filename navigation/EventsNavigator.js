@@ -3,6 +3,7 @@ import {Platform, Text} from 'react-native';
 import {
   createMaterialTopTabNavigator,
   createAppContainer,
+  createSwitchNavigator,
 } from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import {
@@ -13,8 +14,6 @@ import {createDrawerNavigator} from 'react-navigation-drawer';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {createMaterialBottomTabNavigator} from 'react-navigation-material-bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
-import CategoryInfoScreen from '../screens/CategoryInfoScreen';
-import FavoritesScreen from '../screens/FavoritesScreen';
 import AcademicsScreen from '../screens/AcademicsScreen';
 import FeedbackScreen from '../screens/FeedbackScreen';
 import EventScreen from '../screens/EventScreen';
@@ -25,10 +24,9 @@ import NewsScreen from '../screens/NewsScreen';
 import TodoScreen from '../screens/TodoScreen';
 import MapScreen from '../screens/MapScreen';
 import CalendarScreen from '../screens/CalendarScreen';
-
-import ProfileScreen from '../screens/ProfileScreen';
 import Colors from '../constants/Colors';
 import NewsDetailScreen from '../screens/NewsDetailScreen';
+//import LoginScreen from '../screens/LoginScreen';
 
 const defaultStackNavOptions = {
   headerStyle: {
@@ -43,22 +41,6 @@ const defaultStackNavOptions = {
   headerTintColor: Colors.primaryColor,
   headerTitle: 'Screen',
 };
-
-/*const InfoNavigator = createStackNavigator(
-  {
-    Categories: {
-      screen: HomeScreen,
-    },
-    CategoryInfo: {
-      screen: CategoryInfoScreen,
-    },
-    InfoDetail: InfoDetailScreen,
-  },
-  {
-    // initialRouteName: 'Categories',
-    defaultNavigationOptions: defaultStackNavOptions,
-  },
-);*/
 
 const EventNavigator = createStackNavigator(
   {
@@ -160,16 +142,6 @@ const HomeNavigator = createStackNavigator(
   },
 );
 
-const FavNavigator = createStackNavigator(
-  {
-    Favorites: FavoritesScreen,
-    EventDetail: EventDetailScreen,
-  },
-  {
-    defaultNavigationOptions: defaultStackNavOptions,
-  },
-);
-
 const tabScreenConfig = {
   Home: {
     screen: HomeNavigator,
@@ -188,45 +160,23 @@ const tabScreenConfig = {
         ),
     },
   },
-  
-  Profile: {
+
+  Map: {
     screen: MapScreen,
     navigationOptions: {
       tabBarIcon: (tabInfo) => {
-        return (
-          <MaterialIcons name="map" size={25} color={tabInfo.tintColor} />
-        );
+        return <MaterialIcons name="map" size={25} color={tabInfo.tintColor} />;
       },
       tabBarColor: Colors.secondaryColor,
       tabBarLabel:
         Platform.OS === 'android' ? (
-          <Text style={{fontFamily: 'Montserrat-Bold'}}>Profile</Text>
+          <Text style={{fontFamily: 'Montserrat-Bold'}}>Map</Text>
         ) : (
-          'Profile'
+          'Map'
         ),
     },
   },
 };
-
-/*Favorites: {
-    screen: FavNavigator,
-    navigationOptions: {
-      tabBarIcon: (tabInfo) => {
-        return (
-          <MaterialIcons name="star" size={25} color={tabInfo.tintColor} />
-        );
-      },
-      tabBarColor: Colors.secondaryColor,
-      tabBarLabel:
-        Platform.OS === 'android' ? (
-          <Text style={{fontFamily: 'Montserrat-Bold'}}>Favorites</Text>
-        ) : (
-          'Favorites'
-        ),
-    },
-  },
-
-*/
 
 const InfoFavTabNavigator =
   Platform.OS === 'android'
@@ -254,7 +204,6 @@ const MainNavigator = createDrawerNavigator(
         drawerLabel: 'Home',
       },
     },
-    /*Filters: FiltersNavigator,*/
   },
   {
     contentOptions: {

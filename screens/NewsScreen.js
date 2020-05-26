@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {NEWS} from '../data/data';
 import NewsList from '../components/NewsList';
 import Colors from '../constants/Colors';

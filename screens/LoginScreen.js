@@ -1,30 +1,33 @@
 import React, {useState} from 'react';
 import {TextInput, Button} from 'react-native-paper';
 import {
+  TouchableOpacity,
   StyleSheet,
   Text,
   ScrollView,
   View,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import DefaultText from '../components/DefaultText';
 import {firebase} from '@react-native-firebase/app';
 import {firestore} from '../config/FirebaseConfig';
 import '@react-native-firebase/firestore';
 import '@react-native-firebase/database';
+import '@react-native-firebase/auth';
 
 import Colors from '../constants/Colors';
 
 const {width, height} = Dimensions.get('screen');
 
-class FeedbackScreen extends React.Component {
+class LoginScreen extends React.Component {
   constructor() {
     super();
     this.state = {
       email: '',
-      subject: '',
-      message: '',
+      password: '',
+      error: '',
     };
   }
 
@@ -32,29 +35,68 @@ class FeedbackScreen extends React.Component {
     this.setState(() => ({[name]: value}));
   }
 
-  addFeedback = (e) => {
-    e.preventDefault();
-    // eslint-disable-next-line no-unused-vars
-    const db = firebase.firestore();
-    const feedbackRef = db.collection('feedback').add({
-      email: this.state.email,
-      subject: this.state.subject,
-      message: this.state.message,
-    });
+  Login() {
+    this.setState({error: '', loading: true});
+    const {email, password} = this.state;
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(this.LoginSucceed.bind(this))
+      .catch(() => {
+        firebase
+          .auth()
+          .createUserWithEmailAndPassword(email, password)
+          .then(this.LoginSucceed.bind(this))
+          .catch((error) => {
+            let errorCode = error.code;
+            let errorMessage = error.message;
+            if (errorCode === 'auth/weak-password') {
+              this.LoginFail.bind(this)('Weak password!');
+            } else {
+              this.LoginFail.bind(this)(errorMessage);
+            }
+          });
+      });
+  }
+  LoginSucceed() {
     this.setState({
       email: '',
-      subject: '',
-      message: '',
+      password: '',
+      error: '',
+      loading: false,
     });
-  };
+  }
+  LoginFail(errorMessage) {
+    this.setState({error: errorMessage, loading: false});
+  }
+
+  Button() {
+    if (this.state.loading) {
+      return (
+        <View style={styles.spinnerStyle}>
+          <ActivityIndicator size={'small'} />
+        </View>
+      );
+    }
+    return (
+      <Button
+        mode="contained"
+        style={styles.button}
+        color={Colors.highlightColor}
+        labelStyle={styles.buttonContent}
+        onPress={this.Login.bind(this)}>
+        Sign In
+      </Button>
+    );
+  }
+
   render() {
     return (
       <View style={styles.screen}>
         <View style={styles.headerSection}>
-          <Text style={styles.title}>Send Us Your Feedback!</Text>
-          <Text style={styles.headerText}>Do you have any suggestion?</Text>
+          <Text style={styles.title}>Welcome to UniLife!</Text>
           <Text style={styles.headerText}>
-            Let us know in the content below.
+            Login to embark on your HKUST journey!
           </Text>
         </View>
         <View style={styles.formSection}>
@@ -72,10 +114,10 @@ class FeedbackScreen extends React.Component {
             theme={{colors: {primary: Colors.highlightColor}}}
           />
           <TextInput
-            label="Subject"
+            label="Password"
             returnKeyType="next"
-            value={this.state.subject}
-            onChangeText={(text) => this.updateInput('subject', text)}
+            value={this.state.password}
+            onChangeText={(text) => this.updateInput('password', text)}
             autoCapitalize="none"
             autoCompleteType="off"
             textContentType="none"
@@ -83,39 +125,19 @@ class FeedbackScreen extends React.Component {
             style={styles.formInput}
             underlineColor={Colors.secondaryColor}
             theme={{colors: {primary: Colors.highlightColor}}}
+            secureTextEntry
           />
-          <TextInput
-            label="Message"
-            returnKeyType="next"
-            value={this.state.message}
-            onChangeText={(text) => this.updateInput('message', text)}
-            multiline={true}
-            numberOfLines={5}
-            autoCapitalize="none"
-            autoCompleteType="off"
-            textContentType="none"
-            keyboardType="default"
-            style={styles.formInput}
-            underlineColor={Colors.secondaryColor}
-            theme={{colors: {primary: Colors.highlightColor}}}
-          />
-          <Button
-            mode="contained"
-            style={styles.button}
-            color={Colors.highlightColor}
-            labelStyle={styles.buttonContent}
-            onPress={this.addFeedback}>
-            Submit
-          </Button>
+          {this.Button()}
         </View>
+        <DefaultText>{this.state.error}</DefaultText>
       </View>
     );
   }
 }
 
-FeedbackScreen.navigationOptions = (navData) => {
+LoginScreen.navigationOptions = (navData) => {
   return {
-    headerTitle: 'Feedback',
+    headerTitle: 'Login',
   };
 };
 
@@ -179,4 +201,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FeedbackScreen;
+export default LoginScreen;
